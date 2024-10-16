@@ -1,16 +1,41 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import './App.css'
 import UserLogin from './pages/UserLogin';
 import VendorLogin from './pages/VendorLogin';
 import UserSignup from './pages/UserSignup';
 import VendorSignup from './pages/VendorSignup';
 import HomePage from './pages/HomePage';
+import { useEffect, useState } from 'react';
+import Navbar from './components/Navbar';
+
+const Layout = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isHomePage, setIsHomePage] = useState(true);
+
+  useEffect(() => {
+    setIsHomePage(window.location.pathname === '/');
+  }, []);
+
+  return (
+    <>
+      <Navbar isLoggedIn={isLoggedIn} isHomePage={isHomePage} />
+      <Outlet context={[isLoggedIn, setIsLoggedIn]} />
+    </>
+  );
+};
+
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <HomePage />,
+      element: <Layout />,
+      children: [
+        {
+          path: '/',
+          element: <HomePage />,
+        },
+      ],
     },
     {
       path: '/user-login',
@@ -31,8 +56,7 @@ function App() {
 
   ]);
 
-  return <RouterProvider router={router} />
-
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
