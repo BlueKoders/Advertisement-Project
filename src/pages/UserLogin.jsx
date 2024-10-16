@@ -44,10 +44,8 @@ const UserLogin = () => {
             </button>
           </div>
         </form>
-        <div className="mt-4 text-center">
-          <Link to="/sign-up" className="text-sm text-orange-500 hover:underline">
+        <div className="mt-4 text-center text-sm text-orange-500 hover:underline">
             Don't have an account? Sign Up! {/* Link to the sign-up page */}
-          </Link>
         </div>
 
       </div>
