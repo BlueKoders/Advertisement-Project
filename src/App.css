@@ -1,0 +1,16 @@
+.loc {
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+
+}
+
+.main{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    
+}

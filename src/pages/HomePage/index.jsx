@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaShoppingCart, FaPencilAlt, FaTshirt, FaLaptop, FaMedkit, FaGamepad, FaChevronRight, FaBars, FaTimes } from 'react-icons/fa';
 import SchVideo from '/public/videos/back2sch2.mp4';
+import Navbar from '../../components/Navbar';
 
 const categories = [
   { name: 'Supermarket', icon: FaShoppingCart },
@@ -185,8 +186,12 @@ const HomePage = () => {
           Sign Up
         </button>
       )}
+    <div>
+      Search area and button, Account(dropdown to display Sign in and sign up options), add to cart.
+      Categories(fashion, health, beauty and sport, phones and accessories, supermarker, electronics and appliances)
     </div>
   );
 };
 
 export default HomePage;
+
