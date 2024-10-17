@@ -5,6 +5,8 @@ import VendorLogin from './pages/VendorLogin';
 import UserSignup from './pages/UserSignup';
 import VendorSignup from './pages/VendorSignup';
 import HomePage from './pages/HomePage';
+import VendorAdForm from './pages/VendorAdForm';
+import VendorDashboard from './layouts/VendorDashboard';
 
 function App() {
   const router = createBrowserRouter([
@@ -27,6 +29,14 @@ function App() {
     {
       path: '/vendor-signup',
       element: <VendorSignup />,
+    },
+    {
+      path: '/adform',
+      element: <VendorAdForm />,
+    },
+    {
+      path: '/ven-dashboard',
+      element: <VendorDashboard />,
     },
 
   ]);
