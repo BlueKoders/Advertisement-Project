@@ -120,7 +120,7 @@ const HomePage = () => {
                   <h4 className="text-xl font-bold underline">{section.title}</h4>
                   <ul className="list-disc pl-5">
                     {section.items.map((item, itemIndex) => (
-                      <li 
+                      <li
                         key={itemIndex}
                         className="cursor-pointer text-blue-500 hover:text-blue-700"
                         onClick={() => handleItemClick(item)}
@@ -136,7 +136,7 @@ const HomePage = () => {
             <div className="bg-gray-100 p-4 h-full">
               <h3 className="text-2xl mb-4">{selectedItem}</h3>
               <p>This is the content for {selectedItem}. Add more details here.</p>
-              <button 
+              <button
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 onClick={() => setSelectedItem(null)}
               >
@@ -172,7 +172,7 @@ const HomePage = () => {
             <img src="./src/assets/images/sales-ad.jpg" alt="Ad 1" className="w-full h-auto" />
           </div>
           <div className="p-4 h-1/2 flex items-center justify-center">
-            <img src="./src/assets/images/sales-ad.jpg" alt="Ad 2" className="w-full h-auto" /> 
+            <img src="./src/assets/images/sales-ad.jpg" alt="Ad 2" className="w-full h-auto" />
           </div>
         </div>
       </div>
@@ -186,9 +186,10 @@ const HomePage = () => {
           Sign Up
         </button>
       )}
-    <div>
-      Search area and button, Account(dropdown to display Sign in and sign up options), add to cart.
-      Categories(fashion, health, beauty and sport, phones and accessories, supermarker, electronics and appliances)
+      <div>
+        Search area and button, Account(dropdown to display Sign in and sign up options), add to cart.
+        Categories(fashion, health, beauty and sport, phones and accessories, supermarker, electronics and appliances)
+      </div>
     </div>
   );
 };
