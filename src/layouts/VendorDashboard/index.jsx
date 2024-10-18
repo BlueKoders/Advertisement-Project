@@ -80,4 +80,5 @@ const handleEdit = (id) => {
   console.log(`Editing advert with ID: ${id}`);
 };
 
+
 export default VendorDashboard;
