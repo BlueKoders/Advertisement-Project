@@ -9,6 +9,7 @@ import VendorAdForm from './pages/VendorAdForm';
 import VendorDashboard from './layouts/VendorDashboard';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
+import About from './pages/About';
 
 const Layout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,6 +62,10 @@ function App() {
     {
       path: '/ven-dashboard',
       element: <VendorDashboard />,
+    },
+    {
+      path: '/About',
+      element: <About />,
     },
 
   ]);
