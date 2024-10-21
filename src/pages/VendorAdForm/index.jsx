@@ -1,154 +1,74 @@
 import React, { useState } from 'react';
 
 const VendorAdForm = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    image: null,
-    price: '',
-    category: '',
-  });
+  const [loading, setLoading] = useState(false);
 
-  const [message, setMessage] = useState({ type: '', text: '' }); // State to manage success/error messages
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state to prevent multiple submissions
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      image: e.target.files[0],
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setMessage({ type: '', text: '' }); // Clear previous messages
-
-    try {
-      // Simulate form submission (replace with real API call)
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock delay
-
-      // Simulate success response
-      setMessage({ type: 'success', text: 'Advert posted successfully!' });
-      setFormData({ title: '', description: '', image: null, price: '', category: '' }); // Clear form fields
-    } catch (error) {
-      // Simulate error response
-      setMessage({ type: 'error', text: 'Failed to post advert. Please try again.' });
-    }
-
-    setIsSubmitting(false);
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Form values:', Object.fromEntries(new FormData(e.target)));
+      alert('Advert posted successfully!');
+      e.target.reset();
+      setLoading(false);
+    }, 1500);
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Post an Advert</h2>
+    <div className="relative min-h-screen"> 
+      <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('./src/assets/images/colored-pencils.png')" }}>
+      </div>
+      <div className="relative z-10 w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-2xl shadow-indigo-600" >
+        <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">Post a New Advert</h2>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="posting_title" className="block text-sm font-medium text-blue-700">Posting Title</label>
+            <input type="text" id="posting_title" name="posting_title" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+          </div>
 
-      {/* Display success or error message */}
-      {message.text && (
-        <div
-          className={`p-2 rounded mb-4 ${
-            message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-blue-700">Location</label>
+            <input type="text" id="location" name="location" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-blue-700">Description</label>
+            <textarea id="description" name="description" rows="4" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
+          </div>
 
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows="4"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="images" className="block text-sm font-medium text-blue-700">Images</label>
+            <input type="file" id="images" name="images" multiple accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 shadow-md file:text-sm file:bg-gray-50 file:text-gray-500 hover:file:bg-indigo-100" />
+          </div>
 
-        {/* Image */}
-        <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700">Image</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            onChange={handleFileChange}
-            className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="price" className="block text-sm font-medium text-blue-700">Price (GH₵)</label>
+            <input type="number" id="price" name="price" required min="0" step="0.01" className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+          </div>
 
-        {/* Price */}
-        <div>
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price}
-            onChange={handleInputChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="category" className="block text-sm font-medium text-blue-700">Category</label>
+            <select id="category" name="category" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500">
+              <option value="">Select a category</option>
+              <option value="writing instruments">Writing Instruments</option>
+              <option value="paper products">Paper Products</option>
+              <option value="organization">Organization</option>
+              <option value="art supplies">Art Supplies</option>
+              <option value="technology">Technology</option>
+              <option value="classroom essentials">Classroom Essentials</option>
+              <option value="sports & pe">Sports & PE</option>
+              <option value="school uniforms">School Uniforms</option>
+            </select>
+          </div>
 
-        {/* Category */}
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          >
-            <option value="">Select a category</option>
-            <option value="electronics">Electronics</option>
-            <option value="fashion">Fashion</option>
-            <option value="home">Home & Garden</option>
-            <option value="automotive">Automotive</option>
-          </select>
-        </div>
-
-        {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Posting...' : 'Post Advert'}
-          </button>
-        </div>
-      </form>
+          <div>
+            <button type="submit" disabled={loading} className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              {loading ? 'Posting...' : 'Post Advert'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

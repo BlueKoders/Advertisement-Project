@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, User, ShoppingBasket, LogIn, UserCircle, Package, Heart, ChevronDown } from 'lucide-react';
 import Categories from '../pages/Categories';
 
+import { Link } from 'react-router-dom';
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -13,7 +14,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <span className="text-2xl font-bold text-indigo-600">Logo</span>
+            <span className="text-2xl font-bold text-indigo-600">EduExpress</span>
           </div>
 
           {isLoggedIn && !isHomePage && (
@@ -23,6 +24,7 @@ const Navbar = () => {
               </button>
             </div>
           )}
+
           {/* Search Area */}
           <div className="flex-1 max-w-2xl mx-4">
             <div className="relative">
@@ -40,7 +42,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Account and Basket */}
+          {/* Account, Basket, and Post Ad Button */}
           <div className="flex items-center">
             <div className="relative ml-3">
               <div>
@@ -55,7 +57,8 @@ const Navbar = () => {
                 </button>
               </div>
               {isDropdownOpen && (
-                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                  {/* Dropdown links */}
                   <a href="#" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <LogIn className="mr-3 h-5 w-5 text-gray-400" /> Sign In
                   </a>
@@ -70,12 +73,21 @@ const Navbar = () => {
                   </a>
                 </div>
               )}
+
             </div>
+
+            {/* Basket */}
             <div className="ml-4 flow-root lg:ml-6">
               <a href="#" className="group -m-2 p-2 flex items-center">
                 <ShoppingBasket className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">Basket</span>
               </a>
+            </div>
+
+            {/* Post Ad Button */}
+            <div className="ml-4">
+              <Link to="/vendor-signup" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Post Ad</Link>
             </div>
           </div>
         </div>
