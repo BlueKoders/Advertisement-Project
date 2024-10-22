@@ -6,7 +6,6 @@ import UserSignup from './pages/UserSignup';
 import VendorSignup from './pages/VendorSignup';
 import HomePage from './pages/HomePage';
 import VendorAdForm from './pages/VendorAdForm';
-import VendorDashboard from './layouts/VendorDashboard';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import About from './pages/About';
@@ -59,10 +58,6 @@ function App() {
     {
       path: '/adform',
       element: <VendorAdForm />,
-    },
-    {
-      path: '/ven-dashboard',
-      element: <VendorDashboard />,
     },
     {
       path: '/About',

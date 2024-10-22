@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Search, User, ShoppingBasket, LogIn, UserCircle, Package, Heart, ChevronDown } from 'lucide-react';
-import Categories from '../pages/Categories';
+// import Categories from '../pages/Categories';
 
 import { Link } from 'react-router-dom';
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  // const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
 
   return (
     <nav className="bg-white shadow-md">
