@@ -10,6 +10,7 @@ import VendorDashboard from './layouts/VendorDashboard';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import About from './pages/About';
+import VendorInterface from './pages/VendorInterface';
 
 const Layout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -66,6 +67,10 @@ function App() {
     {
       path: '/About',
       element: <About />,
+    },
+    {
+      path: '/ven-interface',
+      element: <VendorInterface />,
     },
 
   ]);
