@@ -1,11 +1,9 @@
 import React from 'react'
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
 
 const About = () => {
     return (
-        <div>
-            <Navbar />
+        <div className=''>
+        
             <div>
                 <h2 className='font-bold text-3xl text-indigo-800 mt-16 ml-9'>About Us</h2>
                 <p className="font-medium text-pretty text-xl text-indigo-300 mt-6 mb-9 leading-loose">
@@ -53,7 +51,6 @@ const About = () => {
 
 
             </div>
-            <Footer />
         </div>
     );
 };
