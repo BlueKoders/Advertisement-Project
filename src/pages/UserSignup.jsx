@@ -1,20 +1,21 @@
-
-
+import React from 'react';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UserSignup = () => {
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   return (
     <div className='school'>
-     
+      
       <div className="min-h-screen py-12">
         <div className="bg-white-300 flex items-center justify-center">
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-2xl shadow-indigo-600">
             {/* Form Title */}
-            <h2 className="text-4xl font-extrabold text-center text-blue-800 mb-6">User Signup</h2>
+            <h2 className="text-4xl font-extrabold text-center text-blue-800 mb-6"> User Signup</h2>
 
             {/* SignUP Form */}
             <form className="space-y-4">
@@ -138,16 +139,16 @@ const UserSignup = () => {
 
             {/* SIGN-UP link */}
             <p className="text-center mt-4 text-blue-700 text-sm">
-              Already have an account?{" "}
-              <Link to="/user-login" className="font-bold hover:underline">Login</Link>
+              Already have an account?{" "}<Link to="/user-login" className="font-bold hover:underline">Login</Link>
             </p>
           </div>
         </div>
       </div>
-      <Footer />
+    
     </div>
   );
 };
 
 export default UserSignup;
+
 

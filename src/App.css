@@ -18,4 +18,9 @@
     background-image:url(../src/assets/images/unnew.png);
     background-repeat: no-repeat; 
     background-position: center;
-}  
+} 
+
+.ab{
+    background-image: url(../src/assets/images/new2.jpg);
+    background-repeat: no-repeat;
+}
