@@ -23,8 +23,8 @@ const VendorAdForm = () => {
         <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">Post a New Advert</h2>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label htmlFor="posting_title" className="block text-sm font-medium text-blue-700">Posting Title</label>
-            <input type="text" id="posting_title" name="posting_title" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+            <label htmlFor="title" className="block text-sm font-medium text-blue-700">Title</label>
+            <input type="text" id="title" name="title" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
           </div>
 
           <div>
