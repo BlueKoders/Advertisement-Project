@@ -1,40 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaBook, FaPencilAlt, FaRuler, FaLaptop, FaPalette, FaFootballBall, FaChalkboardTeacher, FaBars, FaTimes, FaThList, FaTh, FaChevronLeft, FaChevronRight, FaTshirt, FaCouch } from 'react-icons/fa';
 import { PiBackpackFill } from "react-icons/pi";
+import SidebarContent from '../SidebarContent';
+import PostedAds from '../PostedAds';
+
 
 const categories = [
-  { 
-    name: 'Writing Instruments', 
+  {
+    name: 'Writing Instruments',
     icon: FaPencilAlt,
     subcategories: ['Pens', 'Pencils', 'Markers', 'Highlighters', 'Erasers'],
     image: './src/assets/images/writing2.jpg'
   },
-  { 
-    name: 'Paper Products', 
+  {
+    name: 'Paper Products',
     icon: FaBook,
     subcategories: ['Notebooks', 'Binders', 'Loose Leaf Paper', 'Index Cards', 'Sticky Notes'],
     image: './src/assets/images/paper1.jpg'
   },
-  { 
-    name: 'Organization', 
+  {
+    name: 'Organization',
     icon: PiBackpackFill,
     subcategories: ['Backpacks', 'Pencil Cases', 'Folders', 'Organizers', 'Lockers'],
     image: './src/assets/images/organizer4.jpg'
   },
-  { 
-    name: 'Art Supplies', 
+  {
+    name: 'Art Supplies',
     icon: FaPalette,
     subcategories: ['Paints', 'Brushes', 'Colored Pencils', 'Sketchbooks', 'Clay'],
     image: './src/assets/images/arts3.jpg'
   },
-  { 
-    name: 'Technology', 
+  {
+    name: 'Technology',
     icon: FaLaptop,
     subcategories: ['Calculators', 'Laptops', 'Tablets', 'Headphones', 'USB Drives'],
     image: './src/assets/images/tech2.jpg'
   },
-  { 
-    name: 'Classroom Essentials', 
+  {
+    name: 'Classroom Essentials',
     icon: FaChalkboardTeacher,
     subcategories: ['Whiteboards', 'Bulletin Boards', 'Desk Organizers', 'Calendars', 'Staplers'],
     image: './src/assets/images/class.jpg'
@@ -45,8 +48,8 @@ const categories = [
     subcategories: ['Gym Uniforms', 'Sports Equipment', 'Water Bottles', 'First Aid Kits', 'Stopwatches'],
     image: './src/assets/images/sports2.jpg'
   },
-  { 
-    name: 'School Uniforms', 
+  {
+    name: 'School Uniforms',
     icon: FaTshirt,
     subcategories: ['Shirts', 'Trousers', 'Skirts', 'Blazers', 'Ties', 'Fabrics'],
     image: './src/assets/images/uniform4.jpg'
@@ -84,6 +87,36 @@ const HomePage = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [sidebarTop, setSidebarTop] = useState(0);
+  const [selectedAd, setSelectedAd] = useState(null);
+  const categoriesRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (categoriesRef.current) {
+        const categoriesBottom = categoriesRef.current.getBoundingClientRect().bottom;
+        const windowHeight = window.innerHeight;
+        const sidebarHeight = 400; // Approximate height of sidebar
+
+        // If categories section is above viewport
+        if (categoriesBottom < 0) {
+          setSidebarTop(0); // Fix sidebar at top
+        } else {
+          setSidebarTop(Math.max(categoriesBottom, 0)); // Position below categories
+        }
+
+        // Prevent sidebar from going below viewport
+        if (sidebarTop + sidebarHeight > windowHeight) {
+          setSidebarTop(windowHeight - sidebarHeight);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleCategoryHover = (category) => {
     setActiveCategory(category);
@@ -118,6 +151,14 @@ const HomePage = () => {
     nextSlide();
   };
 
+  const handleAdClick = (ad) => {
+    setSelectedAd(ad);
+  };
+
+  const closeAdView = () => {
+    setSelectedAd(null);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isPlaying) {
@@ -130,36 +171,56 @@ const HomePage = () => {
   const filteredAds = selectedItem
     ? sampleAds.filter(ad => ad.subcategory === selectedItem)
     : activeCategory
-    ? sampleAds.filter(ad => ad.category === activeCategory.name)
-    : sampleAds;
+      ? sampleAds.filter(ad => ad.category === activeCategory.name)
+      : sampleAds;
+
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 bg-white">
       <div className="flex flex-col md:flex-row gap-4">
-        {/* Categories Section */}
-        <div className="w-full md:w-1/4 relative">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-2xl mb-4 focus:outline-none"
+        {/* Left Column */}
+        <div className="w-full md:w-1/4">
+          {/* Categories Section */}
+          <div ref={categoriesRef}>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden text-2xl mb-4 focus:outline-none"
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+            <ul className={`${isMenuOpen ? 'block' : 'hidden'} md:block w-full shadow-md bg-slate-50 mb-4`}>
+              {categories.map((category) => (
+                <li
+                  key={category.name}
+                  className="flex items-center justify-between p-2 hover:bg-gray-100 cursor-pointer"
+                  onMouseEnter={() => handleCategoryHover(category)}
+                >
+                  <div className="flex items-center">
+                    <category.icon className="mr-2" />
+                    {category.name}
+                  </div>
+                  <FaChevronRight />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Fixed Sidebar */}
+          <div
+            className="hidden md:block"
+            style={{
+              position: 'fixed',
+              top: `${sidebarTop}px`,
+              width: 'inherit',
+              maxWidth: 'inherit',
+              transition: 'top 0.3s ease',
+              zIndex: 10
+            }}
           >
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
-          <ul className={`${isMenuOpen ? 'block' : 'hidden'} md:block w-full bg-white shadow-md`}>
-            {categories.map((category) => (
-              <li
-                key={category.name}
-                className="flex items-center justify-between p-2 hover:bg-gray-100 cursor-pointer"
-                onMouseEnter={() => handleCategoryHover(category)}
-              >
-                <div className="flex items-center">
-                  <category.icon className="mr-2" />
-                  {category.name}
-                </div>
-                <FaChevronRight />
-              </li>
-            ))}
-          </ul>
+            <SidebarContent />
+          </div>
         </div>
+
 
         {/* Main Content Section */}
         <div className="w-full md:w-3/4" onMouseLeave={handleContentLeave}>
@@ -197,9 +258,8 @@ const HomePage = () => {
               slideshowItems.map((item, index) => (
                 <div
                   key={item.name}
-                  className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
-                    index === currentSlideIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${index === currentSlideIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
                 >
                   {item.type === 'video' ? (
                     <video
@@ -231,8 +291,10 @@ const HomePage = () => {
             )}
           </div>
 
+          <PostedAds />
+
           {/* Featured Ads Section */}
-          <div className="bg-gray-100 p-4">
+          <div className="bg-gray-100 mt-4">
             <h2 className="text-2xl font-bold mb-4">Featured School Supplies</h2>
             <div className="mb-4 flex justify-end">
               <button onClick={toggleView} className="bg-blue-500 text-white px-4 py-2 rounded">
@@ -241,7 +303,7 @@ const HomePage = () => {
             </div>
             <div className={isGridView ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" : "space-y-4"}>
               {filteredAds.map(ad => (
-                <div key={ad.id} className={`bg-white rounded-lg shadow-md overflow-hidden ${isGridView ? '' : 'flex'}`}>
+                <div key={ad.id} className={`bg-white rounded-lg shadow-md overflow-hidden ${isGridView ? '' : 'flex'} cursor-pointer hover:shadow-lg transition-shadow`} onClick={() => handleAdClick(ad)}>
                   <img src={ad.image} alt={ad.title} className={`${isGridView ? 'w-full h-48' : 'w-1/3 h-auto'} object-cover`} />
                   <div className="p-4">
                     <h3 className="font-bold">{ad.title}</h3>
@@ -254,9 +316,51 @@ const HomePage = () => {
             </div>
           </div>
         </div>
+
+        {/* Single Ad Modal */}
+        {selectedAd && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full mx-4 overflow-hidden">
+              <div className="relative">
+                <button
+                  onClick={closeAdView}
+                  className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10"
+                >
+                  <FaTimes className="text-2xl" />
+                </button>
+
+                <img
+                  src={selectedAd.image}
+                  alt={selectedAd.title}
+                  className="w-full h-96 object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">{selectedAd.title}</h2>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-gray-600">Category:</p>
+                    <p className="font-semibold">{selectedAd.category}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Subcategory:</p>
+                    <p className="font-semibold">{selectedAd.subcategory}</p>
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-green-600 mb-4">
+                  {selectedAd.price}
+                </div>
+                <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                  Contact Seller
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-    </div>
-  );
+      </div>
+      );
 };
 
-export default HomePage;
+      export default HomePage;

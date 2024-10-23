@@ -8,8 +8,9 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Table, Modal, Form, Input, Select, InputNumber, message } from 'antd'; // import message
+import { apiEditAdverts, apiPostAdverts } from '../../services/auth'; // Import API services
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 const { TextArea } = Input;
 
 function getItem(label, key, icon, children) {
@@ -116,7 +117,7 @@ const VendorInterface = () => {
       title: 'Are you sure you want to delete this advert?',
       onOk() {
         setAdverts(adverts.filter(advert => advert.id !== id));
-        message.success('Advert deleted successfully'); // success message for delete
+        message.success('Advert deleted successfully');
       },
     });
   };
@@ -124,42 +125,56 @@ const VendorInterface = () => {
   const handleOk = async (values) => {
     setLoading(true);
     try {
-      const formData = {
-        ...values,
-        images: values.images?.fileList || [],
-      };
+      const formData = new FormData();
+      
+      // Append basic fields
+      formData.append('title', values.title);
+      formData.append('description', values.description);
+      formData.append('location', values.location);
+      formData.append('price', values.price);
+      formData.append('category', values.category);
+      
+      // Handle single image
+      const fileInput = values.images;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+      }
 
       if (editingAdvert) {
+        await apiEditAdverts(editingAdvert.id, formData);
         setAdverts(adverts.map(advert => 
-          advert.id === editingAdvert.id ? { ...advert, ...formData } : advert
+          advert.id === editingAdvert.id ? { ...advert, ...values } : advert
+
         ));
-        message.success('Advert updated successfully'); // success message for update
+        message.success('Advert updated successfully');
       } else {
-        const newAdvert = {
-          id: Math.max(...adverts.map(a => a.id), 0) + 1,
-          ...formData,
-        };
-        setAdverts([...adverts, newAdvert]);
-        message.success('Advert posted successfully'); // success message for new post
+        const response = await apiPostAdverts(formData);
+        setAdverts([...adverts, response.data]);
+        message.success('Advert posted successfully');
       }
       
       setIsModalVisible(false);
       setEditingAdvert(null);
       form.resetFields();
+     
     } catch (error) {
-      message.error('Something went wrong! Please try again.'); // error message for failure
+      if (error.response) {
+        message.error(error.response.data.message || 'Server error occurred');
+      } else if (error.request) {
+        message.error('No response from server. Please check your connection.');
+      } else {
+        message.error('Error creating advert: ' + error.message);
+      }
+      console.error('Error details:', error);
     } finally {
       setLoading(false);
     }
   };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     setEditingAdvert(null);
     form.resetFields();
   };
-
-
 
   return (
     <Layout className="min-h-screen">
@@ -221,7 +236,6 @@ const VendorInterface = () => {
             )}
           </div>
         </Content>
-        
       </Layout>
 
       <Modal
@@ -261,55 +275,35 @@ const VendorInterface = () => {
                 </Form.Item>
 
                 <Form.Item
-                  name="location"
-                  label={<span className="text-sm font-medium text-blue-700">Location</span>}
-                  rules={[{ required: true, message: 'Please input the location!' }]}
-                >
-                  <Input 
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                  />
-                </Form.Item>
-
-                <Form.Item
                   name="description"
                   label={<span className="text-sm font-medium text-blue-700">Description</span>}
-                  rules={[{ required: true, message: 'Please input the description!' }]}
                 >
                   <TextArea 
-                    rows={4} 
                     className="w-full rounded-lg border-gray-300 shadow-sm 
                              focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
+                    rows={4} 
                   />
                 </Form.Item>
 
                 <Form.Item
-                  name="images"
-                  label={<span className="text-sm font-medium text-blue-700">Images</span>}
-                  valuePropName="fileList"
+                  name="location"
+                  label={<span className="text-sm font-medium text-blue-700">Location</span>}
                 >
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="block w-full text-sm text-gray-500 
-                             file:mr-4 file:py-2 file:px-4 
-                             file:rounded-lg file:border-0 
-                             file:text-sm file:bg-blue-50 
-                             file:text-blue-700 hover:file:bg-blue-100"
+                  <Input
+                    className="w-full rounded-lg border-gray-300 shadow-sm 
+                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
                   />
                 </Form.Item>
 
                 <Form.Item
                   name="price"
                   label={<span className="text-sm font-medium text-blue-700">Price (GH₵)</span>}
-                  rules={[{ required: true, message: 'Please input the price!' }]}
                 >
-                  <InputNumber
-                    className="w-full rounded-lg"
-                    min={0}
-                    step={0.01}
-                    precision={2}
+                  <InputNumber 
+                    className="w-full rounded-lg border-gray-300 shadow-sm 
+                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
+                    min={1} 
+                    precision={2} 
                   />
                 </Form.Item>
 
@@ -318,31 +312,42 @@ const VendorInterface = () => {
                   label={<span className="text-sm font-medium text-blue-700">Category</span>}
                   rules={[{ required: true, message: 'Please select a category!' }]}
                 >
-                  <Select 
+                  <Select
+                    placeholder="Select a category"
+                    className="w-full rounded-lg border-gray-300 shadow-sm 
+                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     options={categories}
-                    className="w-full rounded-lg"
                   />
                 </Form.Item>
 
-                <div className="flex space-x-4">
+                <Form.Item
+                  name="image"
+                  label={<span className="text-sm font-medium text-blue-700">Image</span>}
+                >
+                  <Input 
+                    type="file"
+                    className="w-full rounded-lg border-gray-300 shadow-sm 
+                              focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
+                    accept="image/*"
+                  />
+                </Form.Item>
+
+                <div className="flex justify-between items-center">
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 
-                             hover:bg-gray-50 transition-colors duration-200"
+                    className="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition-colors duration-200"
                   >
                     Cancel
                   </button>
+
                   <button
                     type="submit"
+                    className={`px-4 py-2 text-white rounded-lg bg-blue-600 hover:bg-blue-700 
+                                transition-colors duration-200 ${loading && 'cursor-not-allowed'}`}
                     disabled={loading}
-                    className={`flex-1 py-2 px-4 rounded-lg text-white font-medium ${
-                      loading 
-                        ? 'bg-blue-400 cursor-not-allowed' 
-                        : 'bg-blue-600 hover:bg-blue-700 transition-colors duration-200'
-                    }`}
                   >
-                    {loading ? 'Processing...' : editingAdvert ? 'Update Advert' : 'Post Advert'}
+                    {loading ? 'Saving...' : editingAdvert ? 'Save Changes' : 'Post Advert'}
                   </button>
                 </div>
               </Form>

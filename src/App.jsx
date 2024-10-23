@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import About from './pages/About';
 import VendorInterface from './pages/VendorInterface';
+import PostedAds from './pages/PostedAds';
 
 const Layout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -66,6 +67,10 @@ function App() {
     {
       path: '/ven-interface',
       element: <VendorInterface />,
+    },
+    {
+      path: '/postedads',
+      element: <PostedAds />,
     },
 
   ]);
