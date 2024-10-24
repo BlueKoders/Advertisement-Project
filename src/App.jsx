@@ -5,12 +5,12 @@ import VendorLogin from './pages/VendorLogin';
 import UserSignup from './pages/UserSignup';
 import VendorSignup from './pages/VendorSignup';
 import HomePage from './pages/HomePage';
-import VendorAdForm from './pages/VendorAdForm';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import About from './pages/About';
 import VendorInterface from './pages/VendorInterface';
 import PostedAds from './pages/PostedAds';
+import VenAdForm from './pages/VendorInterface/components/VenAdForm';
 
 const Layout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,7 +58,7 @@ function App() {
     },
     {
       path: '/adform',
-      element: <VendorAdForm />,
+      element: <VenAdForm />,
     },
     {
       path: '/About',
