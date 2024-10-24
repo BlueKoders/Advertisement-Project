@@ -79,8 +79,9 @@ const PostedAds = ({ selectedCategory, onHoverAds, isGridView, onAdClick }) => {
             <div className="p-4 flex-1">
               <h3 className="font-bold text-lg mb-2">{ad.title}</h3>
               <p className="text-gray-600 mb-1">{ad.category}</p>
+              <p className="text-gray-600 mb-1">{ad.location}</p>  
               <p className="text-green-600 font-bold text-xl">
-                {typeof ad.price === 'number' ? `₵${ad.price.toFixed(2)}` : ad.price}
+                {typeof ad.price === 'number' ? `GHS₵${ ad.price.toFixed(2)}` : ad.price}
               </p>
               
               <div className="mt-2 flex justify-between items-center">

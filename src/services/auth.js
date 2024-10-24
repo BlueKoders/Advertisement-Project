@@ -7,8 +7,17 @@ export const apiSignup = async (payload) => {
 export const apiSignin = async (payload) => {
     return await apiClient.post ( '/vendors/login', payload)
 }
+export const apiUserSignup = async (payload) => {
+    return await apiClient.post ( '/users/register', payload)
+}
+export const apiProfile = async () => {
+    return await apiClient.get ( '/vendors/me' )
+}
 export const apiGetAdverts = async () => {
     return await apiClient.get ( '/adverts' )
+}
+export const apiSingleAd = async () => {
+    return await apiClient.get ( '/adverts/671a24f5f317d5bdb82d73f8' )
 }
 export const apiPostAdverts = async (payload) => {
     return await apiClient.post ( '/adverts' )
