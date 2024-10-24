@@ -15,24 +15,44 @@ const categories = [
 
 const VenAdForm = () => {
     const handleSubmit = async (event) => {
+        event.preventDefault();
+        setIsLoading(true); // Set loading state
+    
         try {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-
-            const response = await apiPostAdverts(formData);
+            const formData = new FormData(event.target); // Capture the form data
+            const response = await apiPostAdverts(formData); // Send the form data to the API
             console.log(response.data);
-
+            
+            // Display success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Advert Posted!',
+                text: 'Your advert has been successfully posted.',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+    
+            setIsLoading(false); // Remove loading state
+    
         } catch (error) {
-            console.log(error)
-
+            console.log(error);
+    
+            // Display error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to post the advert. Please try again later.',
+            });
+    
+            setIsLoading(false); // Remove loading state
         }
     };
+    
 
     const [adId, setAdId] = useState(null);
-    const [title, setTitle] = useState();
-    const [description, setDescription] = useState();
-    const [location, setLocation] = useState();
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [location, setLocation] = useState("");
     const [price, setPrice] = useState();
     const [category, setCategory] = useState();
     const [image, setImage] = useState(null);

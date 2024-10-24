@@ -246,11 +246,12 @@ const HomePage = () => {
                   <FaTimes />
                 </button>
                 <div className="flex flex-col md:flex-row">
-                  <img src={selectedAd.image} alt={selectedAd.title} className="w-full md:w-1/2 h-auto" />
+                  <img src={`https://savefiles.org/${selectedAd.image}?shareable_link=445`} alt={selectedAd.title} className="w-full md:w-1/2 h-auto" />
                   <div className="md:ml-4">
                     <h2 className="text-xl font-bold">{selectedAd.title}</h2>
                     <p className="text-lg text-gray-700">Category: {selectedAd.category}</p>
-                    <p className="text-lg text-gray-700">Price: {selectedAd.price}</p>
+                    <p className="text-lg text-gray-700">Price: {`GHS ${selectedAd.price}`}</p>
+                    <p className="text-lg text-gray-700">Location: {selectedAd.location}</p>
                   </div>
                 </div>
               </div>
