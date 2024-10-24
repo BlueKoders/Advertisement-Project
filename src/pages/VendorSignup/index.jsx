@@ -16,7 +16,7 @@ const VendorSignup = () => {
   const navigate = useNavigate()
 
   const handleSubmit = async (event) => {
-    event.preventDefault()// prevent the page from reloading
+    event.preventDefault();// prevent the page from reloading
     try {
       // Prepare a data to be sent to the backend
       setLoading(true)
@@ -27,6 +27,7 @@ const VendorSignup = () => {
       const email = formData.get("email");
       const password = formData.get("password");
       const confirmpassword = formData.get("confirmpassword");
+
       //check if passwords match
       // if (password!== confirmpassword)
 
@@ -35,7 +36,6 @@ const VendorSignup = () => {
       const payload = { firstname: firstname, lastname: lastname, location: location, email: email, password: password }
       const response = await apiSignup(payload);
       console.log(response.data);
-      //show a success notification 
 
       // Show a success notification
       Swal.fire({

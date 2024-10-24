@@ -1,75 +1,95 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Form, Input, Select, InputNumber, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
-const VendorAdForm = () => {
-  const [loading, setLoading] = useState(false);
+const { TextArea } = Input;
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form values:', Object.fromEntries(new FormData(e.target)));
-      alert('Advert posted successfully!');
-      e.target.reset();
-      setLoading(false);
-    }, 1500);
-  };
+const categories = [
+  { value: 'writing instruments', label: 'Writing Instruments' },
+  { value: 'paper products', label: 'Paper Products' },
+  { value: 'organization', label: 'Organization' },
+  { value: 'art supplies', label: 'Art Supplies' },
+  { value: 'technology', label: 'Technology' },
+  { value: 'classroom essentials', label: 'Classroom Essentials' },
+  { value: 'sports & pe', label: 'Sports & PE' },
+  { value: 'school uniforms', label: 'School Uniforms' },
+];
 
+const VendorAdForm = ({ form, loading, handleOk, editingAdvert }) => {
   return (
-    <div className="relative min-h-screen"> 
-      <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('./src/assets/images/colored-pencils.png')" }}>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleOk}
+      className="space-y-6"
+    >
+      <Form.Item
+        name="title"
+        label={<span className="text-sm font-medium text-gray-700">Title</span>}
+        rules={[{ required: true, message: 'Please enter the advert title' }]}
+      >
+        <Input placeholder="Advert title" />
+      </Form.Item>
+
+      <Form.Item
+        name="description"
+        label={<span className="text-sm font-medium text-gray-700">Description</span>}
+        rules={[{ required: true, message: 'Please enter a description' }]}
+      >
+        <TextArea rows={3} placeholder="Brief description of the advert" />
+      </Form.Item>
+
+      <Form.Item
+        name="category"
+        label={<span className="text-sm font-medium text-gray-700">Category</span>}
+        rules={[{ required: true, message: 'Please select a category' }]}
+      >
+        <Select showSearch placeholder="Select a category" options={categories} />
+      </Form.Item>
+
+      <Form.Item
+        name="price"
+        label={<span className="text-sm font-medium text-gray-700">Price (GH₵)</span>}
+        rules={[{ required: true, message: 'Please enter the price' }]}
+      >
+        <InputNumber min={0} placeholder="Price in Ghana cedis" className="w-full" />
+      </Form.Item>
+
+      <Form.Item
+        name="location"
+        label={<span className="text-sm font-medium text-gray-700">Location</span>}
+        rules={[{ required: true, message: 'Please enter the location' }]}
+      >
+        <Input placeholder="Location" />
+      </Form.Item>
+
+      <Form.Item
+        name="image"
+        label={<span className="text-sm font-medium text-gray-700">Image Upload</span>}
+      >
+        <Upload
+          listType="picture-card"
+          maxCount={1}
+          beforeUpload={() => false}
+        >
+          <div>
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+          </div>
+        </Upload>
+      </Form.Item>
+
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className={`${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            } px-4 py-2 text-white rounded-lg transition-colors duration-200`}
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : editingAdvert ? 'Update Advert' : 'Post Advert'}
+        </button>
       </div>
-      <div className="relative z-10 w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-2xl shadow-indigo-600" >
-        <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">Post a New Advert</h2>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-blue-700">Title</label>
-            <input type="text" id="title" name="title" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
-          </div>
-
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium text-blue-700">Location</label>
-            <input type="text" id="location" name="location" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
-          </div>
-
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-blue-700">Description</label>
-            <textarea id="description" name="description" rows="4" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></textarea>
-          </div>
-
-          <div>
-            <label htmlFor="images" className="block text-sm font-medium text-blue-700">Images</label>
-            <input type="file" id="images" name="images" multiple accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 shadow-md file:text-sm file:bg-gray-50 file:text-gray-500 hover:file:bg-indigo-100" />
-          </div>
-
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium text-blue-700">Price (GH₵)</label>
-            <input type="number" id="price" name="price" required min="0" step="0.01" className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
-          </div>
-
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-blue-700">Category</label>
-            <select id="category" name="category" required className="mt-1 block w-full rounded-md border-gray-300 shadow-md focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500">
-              <option value="">Select a category</option>
-              <option value="writing instruments">Writing Instruments</option>
-              <option value="paper products">Paper Products</option>
-              <option value="organization">Organization</option>
-              <option value="art supplies">Art Supplies</option>
-              <option value="technology">Technology</option>
-              <option value="classroom essentials">Classroom Essentials</option>
-              <option value="sports & pe">Sports & PE</option>
-              <option value="school uniforms">School Uniforms</option>
-            </select>
-          </div>
-
-          <div>
-            <button type="submit" disabled={loading} className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              {loading ? 'Posting...' : 'Post Advert'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    </Form>
   );
 };
 
