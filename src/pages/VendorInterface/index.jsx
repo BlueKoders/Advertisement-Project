@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -6,9 +7,12 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  ShoppingOutlined,
+  DollarOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Table, Modal, Form, Input, Select, InputNumber, message } from 'antd'; // import message
-import { apiEditAdverts, apiPostAdverts } from '../../services/auth'; // Import API services
+import { Layout, Menu, Table, Modal, Form, Input, Select, InputNumber, message, Upload, Card, Row, Col, Statistic } from 'antd';
 
 const { Header, Content, Sider } = Layout;
 const { TextArea } = Input;
@@ -23,12 +27,14 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
+  getItem('Home', 'home', <HomeOutlined />),
   getItem('Dashboard', '1', <PieChartOutlined />),
   getItem('Adverts', '2', <DesktopOutlined />),
   getItem('Account', 'sub1', <UserOutlined />, [
     getItem('Profile', '3'),
     getItem('Settings', '4'),
   ]),
+  getItem('Logout', 'logout', <LogoutOutlined />),
 ];
 
 const categories = [
@@ -44,24 +50,39 @@ const categories = [
 
 const VendorInterface = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState('2');
+  const [selectedMenu, setSelectedMenu] = useState('1'); // Default to Dashboard
   const [loading, setLoading] = useState(false);
-  const [adverts, setAdverts] = useState([
-    { 
-      id: 1, 
-      title: 'Premium Notebooks', 
-      description: 'High-quality notebooks for students',
-      location: 'Accra',
-      price: 25.99,
-      category: 'paper products',
-      images: []
-    },
-  ]);
+  const [advertsList, setAdvertsList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingAdvert, setEditingAdvert] = useState(null);
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    fetchAdverts();
+  }, []);
+
+  const fetchAdverts = async () => {
+    try {
+      const response = await axios.get('https://advertisement-api-q89w.onrender.com/adverts');
+      setAdvertsList(response.data);
+    } catch (error) {
+      message.error('Failed to fetch adverts');
+      console.error('Error fetching adverts:', error);
+    }
+  };
+
   const columns = [
+    {
+      title: 'Image',
+      key: 'image',
+      render: (_, record) => (
+        <img 
+          src={`https://savefiles.org/${record.image}?shareable_link=445`} 
+          alt={record.title}
+          style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+        />
+      ),
+    },
     {
       title: 'Title',
       dataIndex: 'title',
@@ -82,7 +103,10 @@ const VendorInterface = () => {
       title: 'Price (GH₵)',
       dataIndex: 'price',
       key: 'price',
-      render: (price) => price.toFixed(2),
+      render: (price) => {
+        const numericPrice = Number(price);
+        return isNaN(numericPrice) ? price : numericPrice.toFixed(2);
+      },
     },
     {
       title: 'Actions',
@@ -96,7 +120,7 @@ const VendorInterface = () => {
             <EditOutlined className="mr-1" /> Edit
           </button>
           <button
-            onClick={() => handleDelete(record.id)}
+            onClick={() => handleDelete(record._id)}
             className="flex items-center text-red-600 hover:text-red-800"
           >
             <DeleteOutlined className="mr-1" /> Delete
@@ -108,18 +132,22 @@ const VendorInterface = () => {
 
   const handleEdit = (record) => {
     setEditingAdvert(record);
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      ...record,
+      images: undefined
+    });
     setIsModalVisible(true);
   };
 
-  const handleDelete = (id) => {
-    Modal.confirm({
-      title: 'Are you sure you want to delete this advert?',
-      onOk() {
-        setAdverts(adverts.filter(advert => advert.id !== id));
-        message.success('Advert deleted successfully');
-      },
-    });
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://advertisement-api-q89w.onrender.com/adverts/${id}`);
+      message.success('Advert deleted successfully');
+      fetchAdverts();
+    } catch (error) {
+      message.error('Failed to delete advert');
+      console.error('Error deleting advert:', error);
+    }
   };
 
   const handleOk = async (values) => {
@@ -127,32 +155,41 @@ const VendorInterface = () => {
     try {
       const formData = new FormData();
       
-      // Append basic fields
       formData.append('title', values.title);
       formData.append('description', values.description);
       formData.append('location', values.location);
-      formData.append('price', values.price);
+      formData.append('price', Number(values.price));
       formData.append('category', values.category);
       
-      // Handle single image
-      const fileInput = values.images;
-      if (fileInput && fileInput.files && fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
+      if (values.images && values.images.fileList && values.images.fileList[0]) {
+        formData.append('image', values.images.fileList[0].originFileObj);
       }
 
       if (editingAdvert) {
-        await apiEditAdverts(editingAdvert.id, formData);
-        setAdverts(adverts.map(advert => 
-          advert.id === editingAdvert.id ? { ...advert, ...values } : advert
-
-        ));
+        await axios.patch(
+          `https://advertisement-api-q89w.onrender.com/adverts/${editingAdvert._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
         message.success('Advert updated successfully');
       } else {
-        const response = await apiPostAdverts(formData);
-        setAdverts([...adverts, response.data]);
+        await axios.post(
+          'https://advertisement-api-q89w.onrender.com/adverts',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
         message.success('Advert posted successfully');
       }
       
+      fetchAdverts();
       setIsModalVisible(false);
       setEditingAdvert(null);
       form.resetFields();
@@ -170,10 +207,92 @@ const VendorInterface = () => {
       setLoading(false);
     }
   };
+
   const handleCancel = () => {
     setIsModalVisible(false);
     setEditingAdvert(null);
     form.resetFields();
+  };
+
+  const DashboardView = () => {
+    const totalAdverts = advertsList.length;
+    const totalValue = advertsList.reduce((sum, ad) => sum + Number(ad.price), 0);
+    
+    return (
+      <div className="space-y-6">
+        {/* Summary Statistics */}
+        <Row gutter={16} className="mb-6">
+          <Col span={8}>
+            <Card>
+              <Statistic
+                title="Total Adverts"
+                value={totalAdverts}
+                prefix={<ShoppingOutlined />}
+                valueStyle={{ color: '#3f8600' }}
+              />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic
+                title="Total Value"
+                value={totalValue.toFixed(2)}
+                prefix={<DollarOutlined />}
+                suffix="GH₵"
+                valueStyle={{ color: '#cf1322' }}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Products Grid */}
+        <Row gutter={[16, 16]}>
+          {advertsList.map(advert => (
+            <Col xs={24} sm={12} md={8} lg={6} key={advert._id}>
+              <Card
+                hoverable
+                cover={
+                  <div className="h-48 overflow-hidden">
+                    <img
+                      alt={advert.title}
+                      src={`https://savefiles.org/${advert.image}?shareable_link=445`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                }
+                actions={[
+                  <EditOutlined key="edit" onClick={() => handleEdit(advert)} />,
+                  <DeleteOutlined key="delete" onClick={() => handleDelete(advert._id)} />
+                ]}
+                className="h-full flex flex-col"
+              >
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2 truncate">{advert.title}</h3>
+                  <p className="text-gray-500 mb-2 text-sm">
+                    {advert.description?.length > 100
+                      ? `${advert.description.substring(0, 100)}...`
+                      : advert.description}
+                  </p>
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-blue-600 font-medium">
+                      GH₵ {Number(advert.price).toFixed(2)}
+                    </span>
+                    <span className="text-gray-500 text-sm">
+                      {advert.location}
+                    </span>
+                  </div>
+                  <div className="mt-2">
+                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                      {advert.category}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+    );
   };
 
   return (
@@ -189,7 +308,7 @@ const VendorInterface = () => {
         </div>
         <Menu
           theme="dark"
-          defaultSelectedKeys={['2']}
+          defaultSelectedKeys={['1']}
           mode="inline"
           items={items}
           onSelect={({ key }) => setSelectedMenu(key)}
@@ -200,7 +319,9 @@ const VendorInterface = () => {
       <Layout>
         <Header className="bg-white shadow-md px-6">
           <div className="flex items-center h-full">
-            <h1 className="text-xl font-semibold text-blue-800">Vendor Dashboard</h1>
+            <h1 className="text-xl font-semibold text-blue-800">
+              {selectedMenu === '1' ? 'Dashboard' : 'Vendor Dashboard'}
+            </h1>
           </div>
         </Header>
         
@@ -209,29 +330,33 @@ const VendorInterface = () => {
             <div className="text-sm breadcrumbs">
               <span className="text-gray-600">Vendor</span>
               <span className="mx-2 text-gray-400">/</span>
-              <span className="text-blue-600">Adverts</span>
+              <span className="text-blue-600">
+                {selectedMenu === '1' ? 'Dashboard' : 'Adverts'}
+              </span>
             </div>
+            {selectedMenu === '2' && (
+              <button 
+                onClick={() => setIsModalVisible(true)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              >
+                <PlusOutlined className="mr-2" />
+                Add New Advert
+              </button>
+            )}
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-6">
-            {selectedMenu === '2' && (
-              <div className="space-y-6">
-                <button 
-                  onClick={() => setIsModalVisible(true)}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                >
-                  <PlusOutlined className="mr-2" />
-                  Add New Advert
-                </button>
-                
-                <div className="overflow-x-auto">
-                  <Table 
-                    columns={columns} 
-                    dataSource={adverts}
-                    className="shadow-sm"
-                    rowClassName="hover:bg-blue-50"
-                  />
-                </div>
+            {selectedMenu === '1' ? (
+              <DashboardView />
+            ) : selectedMenu === '2' && (
+              <div className="overflow-x-auto">
+                <Table 
+                  columns={columns} 
+                  dataSource={advertsList}
+                  className="shadow-sm"
+                  rowClassName="hover:bg-blue-50"
+                  rowKey="_id"
+                />
               </div>
             )}
           </div>
@@ -265,89 +390,72 @@ const VendorInterface = () => {
               >
                 <Form.Item
                   name="title"
-                  label={<span className="text-sm font-medium text-blue-700">Title</span>}
-                  rules={[{ required: true, message: 'Please input the title!' }]}
+                  label={<span className="text-sm font-medium text-gray-700">Title</span>}
+                  rules={[{ required: true, message: 'Please enter the advert title' }]}
                 >
-                  <Input 
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                  />
+                  <Input placeholder="Advert title" />
                 </Form.Item>
-
+                
                 <Form.Item
                   name="description"
-                  label={<span className="text-sm font-medium text-blue-700">Description</span>}
+                  label={<span className="text-sm font-medium text-gray-700">Description</span>}
+                  rules={[{ required: true, message: 'Please enter a description' }]}
                 >
-                  <TextArea 
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                    rows={4} 
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="location"
-                  label={<span className="text-sm font-medium text-blue-700">Location</span>}
-                >
-                  <Input
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="price"
-                  label={<span className="text-sm font-medium text-blue-700">Price (GH₵)</span>}
-                >
-                  <InputNumber 
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                    min={1} 
-                    precision={2} 
-                  />
+                  <TextArea rows={3} placeholder="Brief description of the advert" />
                 </Form.Item>
 
                 <Form.Item
                   name="category"
-                  label={<span className="text-sm font-medium text-blue-700">Category</span>}
-                  rules={[{ required: true, message: 'Please select a category!' }]}
+                  label={<span className="text-sm font-medium text-gray-700">Category</span>}
+                  rules={[{ required: true, message: 'Please select a category' }]}
                 >
                   <Select
+                    showSearch
                     placeholder="Select a category"
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                             focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     options={categories}
                   />
+                </Form.Item>
+                
+                <Form.Item
+                  name="price"
+                  label={<span className="text-sm font-medium text-gray-700">Price (GH₵)</span>}
+                  rules={[{ required: true, message: 'Please enter the price' }]}
+                >
+                  <InputNumber min={0} placeholder="Price in Ghana cedis" className="w-full" />
+                </Form.Item>
+                
+                <Form.Item
+                  name="location"
+                  label={<span className="text-sm font-medium text-gray-700">Location</span>}
+                  rules={[{ required: true, message: 'Please enter the location' }]}
+                >
+                  <Input placeholder="Location" />
                 </Form.Item>
 
                 <Form.Item
                   name="image"
-                  label={<span className="text-sm font-medium text-blue-700">Image</span>}
+                  label={<span className="text-sm font-medium text-gray-700">Image Upload</span>}
                 >
-                  <Input 
-                    type="file"
-                    className="w-full rounded-lg border-gray-300 shadow-sm 
-                              focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
-                    accept="image/*"
-                  />
+                  <Upload
+                    listType="picture-card"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  </Upload>
                 </Form.Item>
 
-                <div className="flex justify-between items-center">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-
+                <div className="flex justify-center">
                   <button
                     type="submit"
-                    className={`px-4 py-2 text-white rounded-lg bg-blue-600 hover:bg-blue-700 
-                                transition-colors duration-200 ${loading && 'cursor-not-allowed'}`}
+                    className={`${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                      } px-4 py-2 text-white rounded-lg transition-colors duration-200`}
                     disabled={loading}
                   >
-                    {loading ? 'Saving...' : editingAdvert ? 'Save Changes' : 'Post Advert'}
+                    {loading ? 'Processing...' : editingAdvert ? 'Update Advert' : 'Post Advert'}
                   </button>
                 </div>
               </Form>
