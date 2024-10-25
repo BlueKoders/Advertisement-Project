@@ -4,6 +4,7 @@ import { PiBackpackFill } from "react-icons/pi";
 import SidebarContent from '../SidebarContent';
 import PostedAds from '../PostedAds';
 import SampleAds from '../SampleAds';
+import Footer from '../../components/Footer';
 
 const categories = [
   {
@@ -269,6 +270,7 @@ const HomePage = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
