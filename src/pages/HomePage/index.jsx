@@ -3,6 +3,7 @@ import { FaBook, FaPencilAlt, FaLaptop, FaPalette, FaFootballBall, FaChalkboardT
 import { PiBackpackFill } from "react-icons/pi";
 import SidebarContent from '../SidebarContent';
 import PostedAds from '../PostedAds';
+import SampleAds from '../SampleAds';
 import Footer from '../../components/Footer';
 
 const categories = [
@@ -141,8 +142,10 @@ const HomePage = () => {
   return (
     <div className="container mx-auto p-4 bg-white">
       <div className="flex flex-col md:flex-row gap-4">
-        {/* Left Column */}
+
+        {/* Left Column - Sidebar*/}
         <div className="w-full md:w-1/4">
+
           {/* Categories Section */}
           <div ref={categoriesRef}>
             <button
@@ -239,6 +242,13 @@ const HomePage = () => {
             isGridView={isGridView}
             onAdClick={handleAdClick}
           />
+
+          <SampleAds
+            ads={filteredAds}
+            onAdClick={handleAdClick}
+            isGridView={isGridView}
+          />
+
           {/* Ad Details Modal */}
           {selectedAd && (
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">

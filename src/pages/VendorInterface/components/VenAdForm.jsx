@@ -59,7 +59,7 @@ const VenAdForm = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     return (
-        <div className="relative min-h-[900px]">
+        <div className="relative min-h-screen">
             <div
                 className="absolute inset-0 bg-cover bg-center z-0"
                 style={{ backgroundImage: "url('./src/assets/images/notebook2.jpg')" }}

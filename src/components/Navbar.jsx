@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Search, User, ShoppingBasket, LogIn, UserCircle, Package, Heart, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
-import logo from '../assets/images/edulogo.jpg'
-import { Link } from 'react-router-dom';
-
+import logo from '../assets/images/edulogo.jpg';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({
     category: '',
@@ -31,6 +29,8 @@ const Navbar = () => {
     'Furniture'
   ];
 
+  const navigate = useNavigate(); // Use useNavigate for navigation
+
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
     setFilters(prev => ({
@@ -41,8 +41,9 @@ const Navbar = () => {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    // TODO: Implement search functionality with filters
-    console.log('Search with filters:', filters);
+    // Redirect to search results page or handle search in the application
+    const queryString = new URLSearchParams(filters).toString();
+    navigate(`/postedads?${queryString}`); // Example route for search results
   };
 
   const clearFilters = () => {
@@ -50,10 +51,10 @@ const Navbar = () => {
       category: '',
       minPrice: '',
       maxPrice: '',
-      keyword: ''
+      keyword: '',
+      sortBy: 'newest'
     });
   };
-
 
   return (
     <nav className="bg-white shadow-md">
@@ -75,7 +76,6 @@ const Navbar = () => {
           )}
 
           {/* Search Area */}
-
           <div className="relative flex-1 max-w-2xl mx-4">
             <form onSubmit={handleSearch}>
               {/* Main Search Bar */}
@@ -231,29 +231,31 @@ const Navbar = () => {
               {isDropdownOpen && (
                 <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                   {/* Dropdown links */}
-                  <a href="#" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Link to="/user-signup" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <LogIn className="mr-3 h-5 w-5 text-gray-400" /> Sign Up
+                  </Link>
+                  <Link to="/user-login" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <LogIn className="mr-3 h-5 w-5 text-gray-400" /> Sign In
-                  </a>
-                  <a href="#" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  </Link>
+                  <Link to="/account" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <UserCircle className="mr-3 h-5 w-5 text-gray-400" /> My Account
-                  </a>
-                  <a href="#" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  </Link>
+                  <Link to="/orders" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <Package className="mr-3 h-5 w-5 text-gray-400" /> Orders
-                  </a>
-                  <a href="#" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  </Link>
+                  <Link to="/saved-items" className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <Heart className="mr-3 h-5 w-5 text-gray-400" /> Saved Items
-                  </a>
+                  </Link>
                 </div>
               )}
-
             </div>
 
             {/* Basket */}
             <div className="ml-4 flow-root lg:ml-6">
-              <a href="#" className="group -m-2 p-2 flex items-center">
+              <Link to="/basket" className="group -m-2 p-2 flex items-center">
                 <ShoppingBasket className="flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">Basket</span>
-              </a>
+              </Link>
             </div>
 
             {/* Post Ad Button */}
@@ -265,7 +267,7 @@ const Navbar = () => {
         </div>
         {isLoggedIn && !isHomePage && isCategoriesOpen && (
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Categories />
+            {/* <Categories /> */}
           </div>
         )}
       </div>
