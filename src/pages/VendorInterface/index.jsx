@@ -17,7 +17,7 @@ const VendorInterface = () => {
   const [advertsList, setAdvertsList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingAdvert, setEditingAdvert] = useState(null);
-  const [form] = Form.useForm();
+  const [form] = useForm.Form();
 
   useEffect(() => {
     fetchAdverts();
@@ -32,6 +32,8 @@ const VendorInterface = () => {
     }
   };
 
+
+   
   const handleEdit = (record) => {
     setEditingAdvert(record);
     form.setFieldsValue(record);
@@ -73,7 +75,7 @@ const VendorInterface = () => {
     setLoading(false);
   };
 
-  const handleAddNew = () => {
+ const handleAddNew = () => {
     form.resetFields();  // Clear form fields before opening
     setEditingAdvert(null);  // Ensure no advert is being edited
     setIsModalVisible(true);  // Open modal
