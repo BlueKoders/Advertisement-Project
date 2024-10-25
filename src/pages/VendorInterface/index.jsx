@@ -11,8 +11,10 @@ import {
   LogoutOutlined,
   ShoppingOutlined,
   DollarOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Table, Modal, Form, Input, Select, InputNumber, message, Upload, Card, Row, Col, Statistic } from 'antd';
+import RootLayout from '../../layouts/RootLayout';
 
 const { Header, Content, Sider } = Layout;
 const { TextArea } = Input;
@@ -76,8 +78,8 @@ const VendorInterface = () => {
       title: 'Image',
       key: 'image',
       render: (_, record) => (
-        <img 
-          src={`https://savefiles.org/${record.image}?shareable_link=445`} 
+        <img
+          src={`https://savefiles.org/${record.image}?shareable_link=445`}
           alt={record.title}
           style={{ width: '100px', height: '100px', objectFit: 'cover' }}
         />
@@ -154,13 +156,13 @@ const VendorInterface = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-      
+
       formData.append('title', values.title);
       formData.append('description', values.description);
       formData.append('location', values.location);
       formData.append('price', Number(values.price));
       formData.append('category', values.category);
-      
+
       if (values.images && values.images.fileList && values.images.fileList[0]) {
         formData.append('image', values.images.fileList[0].originFileObj);
       }
@@ -188,12 +190,12 @@ const VendorInterface = () => {
         );
         message.success('Advert posted successfully');
       }
-      
+
       fetchAdverts();
       setIsModalVisible(false);
       setEditingAdvert(null);
       form.resetFields();
-     
+
     } catch (error) {
       if (error.response) {
         message.error(error.response.data.message || 'Server error occurred');
@@ -217,7 +219,7 @@ const VendorInterface = () => {
   const DashboardView = () => {
     const totalAdverts = advertsList.length;
     const totalValue = advertsList.reduce((sum, ad) => sum + Number(ad.price), 0);
-    
+
     return (
       <div className="space-y-6">
         {/* Summary Statistics */}
@@ -296,174 +298,176 @@ const VendorInterface = () => {
   };
 
   return (
-    <Layout className="min-h-screen">
-      <Sider 
-        collapsible 
-        collapsed={collapsed} 
-        onCollapse={setCollapsed}
-        className="bg-blue-800"
-      >
-        <div className="h-16 m-4 bg-blue-900 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-xl">VD</span>
-        </div>
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={['1']}
-          mode="inline"
-          items={items}
-          onSelect={({ key }) => setSelectedMenu(key)}
+    <RootLayout>
+      <Layout className="min-h-screen">
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
           className="bg-blue-800"
-        />
-      </Sider>
-      
-      <Layout>
-        <Header className="bg-white shadow-md px-6">
-          <div className="flex items-center h-full">
-            <h1 className="text-xl font-semibold text-blue-800">
-              {selectedMenu === '1' ? 'Dashboard' : 'Vendor Dashboard'}
-            </h1>
+        >
+          <div className="h-16 m-4 bg-blue-900 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">VD</span>
           </div>
-        </Header>
-        
-        <Content className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="text-sm breadcrumbs">
-              <span className="text-gray-600">Vendor</span>
-              <span className="mx-2 text-gray-400">/</span>
-              <span className="text-blue-600">
-                {selectedMenu === '1' ? 'Dashboard' : 'Adverts'}
-              </span>
+          <Menu
+            theme="dark"
+            defaultSelectedKeys={['1']}
+            mode="inline"
+            items={items}
+            onSelect={({ key }) => setSelectedMenu(key)}
+            className="bg-blue-800"
+          />
+        </Sider>
+
+        <Layout>
+          <Header className="bg-white shadow-md px-6">
+            <div className="flex items-center h-full">
+              <h1 className="text-xl font-semibold text-blue-800">
+                {selectedMenu === '1' ? 'Dashboard' : 'Vendor Dashboard'}
+              </h1>
             </div>
-            {selectedMenu === '2' && (
-              <button 
-                onClick={() => setIsModalVisible(true)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-              >
-                <PlusOutlined className="mr-2" />
-                Add New Advert
-              </button>
-            )}
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            {selectedMenu === '1' ? (
-              <DashboardView />
-            ) : selectedMenu === '2' && (
-              <div className="overflow-x-auto">
-                <Table 
-                  columns={columns} 
-                  dataSource={advertsList}
-                  className="shadow-sm"
-                  rowClassName="hover:bg-blue-50"
-                  rowKey="_id"
-                />
+          </Header>
+
+          <Content className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div className="text-sm breadcrumbs">
+                <span className="text-gray-600">Vendor</span>
+                <span className="mx-2 text-gray-400">/</span>
+                <span className="text-blue-600">
+                  {selectedMenu === '1' ? 'Dashboard' : 'Adverts'}
+                </span>
               </div>
-            )}
-          </div>
-        </Content>
-      </Layout>
+              {selectedMenu === '2' && (
+                <button
+                  onClick={() => setIsModalVisible(true)}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                >
+                  <PlusOutlined className="mr-2" />
+                  Add New Advert
+                </button>
+              )}
+            </div>
 
-      <Modal
-        title={null}
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={720}
-        className="p-0"
-        closable={false}
-        centered
-      >
-        <div className="relative min-h-[900px]">
-          <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('./src/assets/images/notebook2.jpg')" }} />
-          
-          <div className="relative z-10 p-14">
-            <div className="w-full max-w-md mx-auto bg-inherit rounded-lg shadow-2xl p-8">
-              <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">
-                {editingAdvert ? "Edit Advert" : "Post a New Advert"}
-              </h2>
-              
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleOk}
-                className="space-y-6"
-              >
-                <Form.Item
-                  name="title"
-                  label={<span className="text-sm font-medium text-gray-700">Title</span>}
-                  rules={[{ required: true, message: 'Please enter the advert title' }]}
-                >
-                  <Input placeholder="Advert title" />
-                </Form.Item>
-                
-                <Form.Item
-                  name="description"
-                  label={<span className="text-sm font-medium text-gray-700">Description</span>}
-                  rules={[{ required: true, message: 'Please enter a description' }]}
-                >
-                  <TextArea rows={3} placeholder="Brief description of the advert" />
-                </Form.Item>
-
-                <Form.Item
-                  name="category"
-                  label={<span className="text-sm font-medium text-gray-700">Category</span>}
-                  rules={[{ required: true, message: 'Please select a category' }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select a category"
-                    options={categories}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              {selectedMenu === '1' ? (
+                <DashboardView />
+              ) : selectedMenu === '2' && (
+                <div className="overflow-x-auto">
+                  <Table
+                    columns={columns}
+                    dataSource={advertsList}
+                    className="shadow-sm"
+                    rowClassName="hover:bg-blue-50"
+                    rowKey="_id"
                   />
-                </Form.Item>
-                
-                <Form.Item
-                  name="price"
-                  label={<span className="text-sm font-medium text-gray-700">Price (GH₵)</span>}
-                  rules={[{ required: true, message: 'Please enter the price' }]}
-                >
-                  <InputNumber min={0} placeholder="Price in Ghana cedis" className="w-full" />
-                </Form.Item>
-                
-                <Form.Item
-                  name="location"
-                  label={<span className="text-sm font-medium text-gray-700">Location</span>}
-                  rules={[{ required: true, message: 'Please enter the location' }]}
-                >
-                  <Input placeholder="Location" />
-                </Form.Item>
-
-                <Form.Item
-                  name="image"
-                  label={<span className="text-sm font-medium text-gray-700">Image Upload</span>}
-                >
-                  <Upload
-                    listType="picture-card"
-                    maxCount={1}
-                    beforeUpload={() => false}
-                  >
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  </Upload>
-                </Form.Item>
-
-                <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    className={`${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                      } px-4 py-2 text-white rounded-lg transition-colors duration-200`}
-                    disabled={loading}
-                  >
-                    {loading ? 'Processing...' : editingAdvert ? 'Update Advert' : 'Post Advert'}
-                  </button>
                 </div>
-              </Form>
+              )}
+            </div>
+          </Content>
+        </Layout>
+
+        <Modal
+          title={null}
+          open={isModalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          width={720}
+          className="p-0"
+          closable={false}
+          centered
+        >
+          <div className="relative min-h-[900px]">
+            <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('./src/assets/images/notebook2.jpg')" }} />
+
+            <div className="relative z-10 p-14">
+              <div className="w-full max-w-md mx-auto bg-inherit rounded-lg shadow-2xl p-8">
+                <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">
+                  {editingAdvert ? "Edit Advert" : "Post a New Advert"}
+                </h2>
+
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={handleOk}
+                  className="space-y-6"
+                >
+                  <Form.Item
+                    name="title"
+                    label={<span className="text-sm font-medium text-gray-700">Title</span>}
+                    rules={[{ required: true, message: 'Please enter the advert title' }]}
+                  >
+                    <Input placeholder="Advert title" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="description"
+                    label={<span className="text-sm font-medium text-gray-700">Description</span>}
+                    rules={[{ required: true, message: 'Please enter a description' }]}
+                  >
+                    <TextArea rows={3} placeholder="Brief description of the advert" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="category"
+                    label={<span className="text-sm font-medium text-gray-700">Category</span>}
+                    rules={[{ required: true, message: 'Please select a category' }]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Select a category"
+                      options={categories}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="price"
+                    label={<span className="text-sm font-medium text-gray-700">Price (GH₵)</span>}
+                    rules={[{ required: true, message: 'Please enter the price' }]}
+                  >
+                    <InputNumber min={0} placeholder="Price in Ghana cedis" className="w-full" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="location"
+                    label={<span className="text-sm font-medium text-gray-700">Location</span>}
+                    rules={[{ required: true, message: 'Please enter the location' }]}
+                  >
+                    <Input placeholder="Location" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="image"
+                    label={<span className="text-sm font-medium text-gray-700">Image Upload</span>}
+                  >
+                    <Upload
+                      listType="picture-card"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                    >
+                      <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Upload</div>
+                      </div>
+                    </Upload>
+                  </Form.Item>
+
+                  <div className="flex justify-center">
+                    <button
+                      type="submit"
+                      className={`${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                        } px-4 py-2 text-white rounded-lg transition-colors duration-200`}
+                      disabled={loading}
+                    >
+                      {loading ? 'Processing...' : editingAdvert ? 'Update Advert' : 'Post Advert'}
+                    </button>
+                  </div>
+                </Form>
+              </div>
             </div>
           </div>
-        </div>
-      </Modal>
-    </Layout>
+        </Modal>
+      </Layout>
+    </RootLayout>
   );
 };
 

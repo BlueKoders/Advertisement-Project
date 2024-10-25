@@ -1,9 +1,15 @@
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 
-const RootLayout = () => {
+const RootLayout = ({children}) => {
   return (
-    <div>RootLayout</div>
-  )
-}
+    <div>
+      <Navbar />
+      <div>{children}</div>
+      <Footer />
+    </div>
+  );
+};
 
 export default RootLayout;
