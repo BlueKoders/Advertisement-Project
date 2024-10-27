@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { HomeOutlined, PieChartOutlined, DesktopOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const { Sider } = Layout;
 
@@ -19,20 +20,35 @@ const items = [
   getItem('Logout', 'logout', <LogoutOutlined />),
 ];
 
-const Sidebar = ({ collapsed, setCollapsed, setSelectedMenu }) => (
-  <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} className="bg-blue-800">
-    <div className="h-16 m-4 bg-blue-900 rounded-lg flex items-center justify-center">
-      <span className="text-white font-bold text-xl">VD</span>
-    </div>
-    <Menu
-      theme="dark"
-      defaultSelectedKeys={['1']}
-      mode="inline"
-      items={items}
-      onSelect={({ key }) => setSelectedMenu(key)}
-      className="bg-blue-800"
-    />
-  </Sider>
-);
+const Sidebar = ({ collapsed, setCollapsed, setSelectedMenu }) => {
+  const navigate = useNavigate();
+
+  const handleMenuSelect = ({ key }) => {
+    if (key === 'home') {
+      navigate('/');
+    } else if (key === 'logout') {
+      // Add any logout logic here if needed
+      navigate('/');
+    } else {
+      setSelectedMenu(key);
+    }
+  };
+
+  return (
+    <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} className="bg-blue-800">
+      <div className="h-16 m-4 bg-blue-900 rounded-lg flex items-center justify-center">
+        <span className="text-white font-bold text-xl">VD</span>
+      </div>
+      <Menu
+        theme="dark"
+        defaultSelectedKeys={['1']}
+        mode="inline"
+        items={items}
+        onSelect={handleMenuSelect}
+        className="bg-blue-800"
+      />
+    </Sider>
+  );
+};
 
 export default Sidebar;

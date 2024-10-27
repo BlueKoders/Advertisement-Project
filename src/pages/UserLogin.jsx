@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import RootLayout from '../layouts/RootLayout';
+import { Link } from 'react-router-dom';
 
 const UserLogin = () => {
   const [email, setEmail] = useState('');
@@ -50,7 +51,7 @@ const UserLogin = () => {
                 type="submit"
                 className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
               >
-                Log In
+                <Link to="/" className="font-bold hover:underline">Login</Link>
               </button>
             </div>
           </form>

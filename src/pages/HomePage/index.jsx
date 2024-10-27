@@ -86,9 +86,8 @@ const HomePage = () => {
       if (categoriesRef.current) {
         const categoriesBottom = categoriesRef.current.getBoundingClientRect().bottom;
         const windowHeight = window.innerHeight;
-        const sidebarHeight = 400; // Approximate height of sidebar
+        const sidebarHeight = 400;
 
-        // If categories section is above viewport
         if (categoriesBottom < 0) {
           setSidebarTop(0); // Fix sidebar at top
         } else {
